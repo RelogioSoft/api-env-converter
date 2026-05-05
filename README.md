@@ -1,8 +1,15 @@
 # Credentials Converter
 
+[![Deploy GitHub Pages](https://github.com/RelogioSoft/api-env-converter/actions/workflows/deploy.yml/badge.svg)](https://github.com/RelogioSoft/api-env-converter/actions/workflows/deploy.yml)
+[![Live demo](https://img.shields.io/badge/live-demo-1F3D2E)](https://relogiosoft.github.io/api-env-converter/)
+[![Tests](https://img.shields.io/badge/tests-vitest-6E9F18)](#tests)
+[![Client side only](https://img.shields.io/badge/client--side-only-2A5C7A)](#security-model)
+
 Credentials Converter is a static, browser-only web app for converting local environment and credential files between Postman, Bruno, and Vault-compatible flat JSON.
 
 It is designed for manual, local conversion work: paste text, upload a file, convert, copy the result, or download a generated file. There is no backend and no direct integration with Postman, Bruno, or HashiCorp Vault.
+
+Published app: https://relogiosoft.github.io/api-env-converter/
 
 ## Supported Formats
 
@@ -195,6 +202,12 @@ Test coverage includes:
 ## Deploy to GitHub Pages
 
 The repository includes a GitHub Actions workflow at `.github/workflows/deploy.yml`.
+
+Published URL:
+
+```text
+https://relogiosoft.github.io/api-env-converter/
+```
 
 To deploy:
 
