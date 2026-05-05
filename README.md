@@ -12,6 +12,10 @@ It is designed for manual, local conversion work: paste text, upload a file, con
 
 Published app: https://relogiosoft.github.io/api-env-converter/
 
+## Screenshot
+
+![Credentials Converter interface](docs/screenshot.png)
+
 ## Supported Formats
 
 - Postman Environment JSON
@@ -287,6 +291,11 @@ vars:secret [
 ```text
 LICENSE
 README.md
+docs/
+  screenshot.png
+public/
+  app-icon.png
+  favicon.png
 src/
   App.tsx
   main.tsx
