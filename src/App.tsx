@@ -1,4 +1,4 @@
-import { type ChangeEvent, type DragEvent, useMemo, useRef, useState } from 'react';
+import { type ChangeEvent, type DragEvent, useEffect, useMemo, useRef, useState } from 'react';
 import {
   convertEnvironment,
   getDownloadFileName,
@@ -209,19 +209,23 @@ export default function App() {
   const secretCount = parsedVars.filter((v) => v.secret).length;
   const downloadFileName = getDownloadFileName(targetFormat, environmentName);
 
-  // ── handlers ──
-  function handleConvert() {
-    setStatus(''); setError('');
-    if (!input.trim()) { setError('Paste or upload an environment file before converting.'); return; }
+  useEffect(() => {
+    if (!input.trim()) {
+      setOutput('');
+      setError('');
+      return;
+    }
+
     try {
       setOutput(convertEnvironment(sourceFormat, targetFormat, input, environmentName));
-      setStatus('Converted successfully.');
+      setError('');
     } catch (e) {
       setOutput('');
       setError(e instanceof ConversionError || e instanceof Error ? e.message : 'Unable to convert this input.');
     }
-  }
+  }, [environmentName, input, sourceFormat, targetFormat]);
 
+  // ── handlers ──
   function handleReset() {
     setInput(''); setOutput(''); setError(''); setStatus('');
   }
@@ -233,10 +237,8 @@ export default function App() {
     setTargetFormat(newTarget);
     if (output) {
       setInput(output);
-      setOutput(input);
     } else {
       setInput(EXAMPLE_INPUTS[newSource]);
-      setOutput('');
     }
     setError(''); setStatus('');
   }
@@ -244,24 +246,24 @@ export default function App() {
   function handleSourceFormatChange(format: EnvironmentFormat) {
     const shouldReplace = !input.trim() || input === EXAMPLE_INPUTS[sourceFormat];
     setSourceFormat(format);
-    setOutput(''); setError('');
+    setError('');
     if (shouldReplace) { setInput(EXAMPLE_INPUTS[format]); setStatus(`Loaded ${FORMAT_LABEL[format]} example.`); }
     else { setStatus(''); }
   }
 
   function handleTargetFormatChange(format: EnvironmentFormat) {
     setTargetFormat(format);
-    setOutput(''); setError(''); setStatus('');
+    setError(''); setStatus('');
   }
 
   function handleLoadExample() {
     setInput(EXAMPLE_INPUTS[sourceFormat]);
-    setOutput(''); setError('');
+    setError('');
     setStatus(`Loaded ${FORMAT_LABEL[sourceFormat]} example.`);
   }
 
   async function handleFileRead(file: File) {
-    setError(''); setStatus(''); setOutput('');
+    setError(''); setStatus('');
     try {
       setInput(await file.text());
       if (!environmentName.trim()) {
@@ -403,8 +405,11 @@ export default function App() {
             <div style={{
               fontFamily: fontMono, fontSize: 11, color: T.ink3,
               marginTop: 4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-            }}>
-              {environmentName || 'untitled'}{FORMAT_EXT[targetFormat]}
+            }}
+              title={downloadFileName}
+              aria-label={`Output file name: ${downloadFileName}`}
+            >
+              {downloadFileName}
             </div>
           </div>
         </SidebarSection>
@@ -432,22 +437,6 @@ export default function App() {
           </SidebarSection>
         )}
 
-        {/* Convert button */}
-        <button
-          type="button"
-          onClick={handleConvert}
-          style={{
-            marginTop: 'auto',
-            width: '100%', padding: '13px 18px',
-            borderRadius: 10,
-            background: T.accent, color: T.accentInk,
-            border: `1px solid ${T.accent}`,
-            fontFamily: fontSans, fontSize: 14, fontWeight: 600,
-            cursor: 'pointer', letterSpacing: '0.01em',
-          }}
-        >
-          Convert {FORMAT_LABEL[sourceFormat]} → {FORMAT_LABEL[targetFormat]}
-        </button>
       </aside>
 
       {/* ══ MAIN ════════════════════════════════════════════ */}
@@ -524,7 +513,7 @@ export default function App() {
             </div>
             <textarea
               value={input}
-              onChange={(e) => { setInput(e.target.value); setOutput(''); setError(''); setStatus(''); }}
+              onChange={(e) => { setInput(e.target.value); setError(''); setStatus(''); }}
               placeholder="Paste your environment here, or drag-and-drop a file…"
               spellCheck={false}
               style={{
@@ -601,7 +590,7 @@ export default function App() {
                 }}>
                   {error
                     ? <span style={{ color: T.rose }}>{error}</span>
-                    : 'Converted output appears here.'}
+                    : 'Converted output appears here automatically.'}
                 </div>
               )}
             </div>

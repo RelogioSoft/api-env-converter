@@ -1,5 +1,4 @@
 import { fireEvent, render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 import App from '../App';
 
@@ -9,7 +8,7 @@ describe('App smoke tests', () => {
 
     expect(screen.getByRole('heading', { name: /credentialsconverter/i })).toBeInTheDocument();
     expect(screen.getByDisplayValue(/"name": "local"/)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /convert postman → bruno/i })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /convert/i })).not.toBeInTheDocument();
   });
 
   it('loads the selected source example', () => {
@@ -22,30 +21,29 @@ describe('App smoke tests', () => {
     expect(screen.getByText(/Loaded Bruno example\./)).toBeInTheDocument();
   });
 
-  it('converts the default Postman example to Bruno output', async () => {
-    const user = userEvent.setup();
+  it('converts the default Postman example to Bruno output automatically', async () => {
     const { container } = render(<App />);
 
-    await user.click(screen.getByRole('button', { name: /convert postman → bruno/i }));
-
+    expect(await screen.findByText(/vars:secret/)).toBeInTheDocument();
     expect(container).toHaveTextContent('baseUrl: https://api.example.com');
     expect(container).toHaveTextContent('vars:secret');
-    expect(screen.getByText(/Converted successfully\./)).toBeInTheDocument();
   });
 
-  it('shows a friendly validation error for invalid input', async () => {
-    const user = userEvent.setup();
+  it('shows a friendly validation error for invalid input automatically', async () => {
     render(<App />);
 
     const input = screen.getByDisplayValue(/"name": "local"/);
     fireEvent.change(input, { target: { value: '{' } });
-    await user.click(screen.getByRole('button', { name: /convert postman → bruno/i }));
 
-    expect(screen.getByText(/Postman environment must be valid JSON\./)).toBeInTheDocument();
+    expect(
+      await screen.findByText(/Postman environment must be valid JSON\./),
+    ).toBeInTheDocument();
   });
 
-  it('keeps copy and download disabled until output exists', () => {
+  it('keeps copy and download disabled when output is empty', () => {
     render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: /reset/i }));
 
     expect(screen.getByRole('button', { name: /copy/i })).toBeDisabled();
     expect(screen.getByRole('button', { name: /download/i })).toBeDisabled();
