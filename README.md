@@ -4,6 +4,7 @@
 [![Live demo](https://img.shields.io/badge/live-demo-1F3D2E)](https://relogiosoft.github.io/api-env-converter/)
 [![Tests](https://img.shields.io/badge/tests-vitest-6E9F18)](#tests)
 [![Client side only](https://img.shields.io/badge/client--side-only-2A5C7A)](#security-model)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 Credentials Converter is a static, browser-only web app for converting local environment and credential files between Postman, Bruno, and Vault-compatible flat JSON.
 
@@ -284,6 +285,8 @@ vars:secret [
 ## Project Structure
 
 ```text
+LICENSE
+README.md
 src/
   App.tsx
   main.tsx
@@ -308,6 +311,10 @@ src/
     security.test.ts
     vaultJson.test.ts
 ```
+
+## License
+
+This project is licensed under the MIT License. See [LICENSE](LICENSE).
 
 ## Known Limitations
 
